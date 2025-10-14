@@ -8,7 +8,7 @@ using ToDoList.Domain.Models;
 [Route("api/todo-items")]
 public class TodoListController : ControllerBase
 {
-    private static readonly List<ToDoItem> items =
+    private static readonly List<ToDoItem> Items =
     [
         new() { Id = 1, Name = "Buy groceries",     Description = "Milk, eggs, bread, and vegetables.", IsCompleted = false },
         new() { Id = 2, Name = "Finish C# project", Description = "Implement the ToDoList API and write unit tests.", IsCompleted = false },
@@ -27,7 +27,7 @@ public class TodoListController : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var used = items.Select(x => x.Id).OrderBy(x => x).ToList();
+        var used = Items.Select(x => x.Id).OrderBy(x => x).ToList();
         int newId = 1;
         foreach (int id in used)
         {
@@ -46,19 +46,19 @@ public class TodoListController : ControllerBase
             IsCompleted = dto.IsCompleted
         };
 
-        items.Add(entity);
+        Items.Add(entity);
         var result = MapToResponse(entity);
         return CreatedAtAction(nameof(ReadById), new { id = result.Id }, result);
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemResponseDto>> Read()
-        => Ok(items.Select(MapToResponse));
+        => Ok(Items.Select(MapToResponse));
 
     [HttpGet("{id:int}")]
     public ActionResult<ToDoItemResponseDto> ReadById([FromRoute] int id)
     {
-        var item = items.FirstOrDefault(x => x.Id == id);
+        var item = Items.FirstOrDefault(x => x.Id == id);
         return item is null ? NotFound() : Ok(MapToResponse(item));
     }
 
@@ -78,7 +78,7 @@ public class TodoListController : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var existing = items.FirstOrDefault(x => x.Id == id);
+        var existing = Items.FirstOrDefault(x => x.Id == id);
         if (existing is null)
         {
             return NotFound();
@@ -94,12 +94,12 @@ public class TodoListController : ControllerBase
     [HttpDelete("{id:int}")]
     public IActionResult DeleteById([FromRoute] int id)
     {
-        int idx = items.FindIndex(x => x.Id == id);
+        int idx = Items.FindIndex(x => x.Id == id);
         if (idx < 0)
         {
             return NotFound();
         }
-        items.RemoveAt(idx);
+        Items.RemoveAt(idx);
         return NoContent();
     }
 
