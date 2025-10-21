@@ -3,10 +3,11 @@ namespace ToDoList.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence;
 
 [ApiController]
 [Route("api/todo-items")]
-public class TodoListController : ControllerBase
+public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
 {
     private static readonly List<ToDoItem> Items =
     [
@@ -14,6 +15,8 @@ public class TodoListController : ControllerBase
         new() { Id = 2, Name = "Finish C# project", Description = "Implement the ToDoList API and write unit tests.", IsCompleted = false },
         new() { Id = 3, Name = "Call mom",          Description = "Weekly check-in call.", IsCompleted = true }
     ];
+
+    private readonly ToDoItemsContext dbContext = dbContext;
 
     [HttpPost]
     public ActionResult<ToDoItemResponseDto> Create([FromBody] ToDoItemCreateRequestDto dto)
@@ -27,7 +30,7 @@ public class TodoListController : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var used = Items.Select(x => x.Id).OrderBy(x => x).ToList();
+        var used = dbContext.ToDoItems.Select(x => x.Id).OrderBy(x => x).ToList();
         int newId = 1;
         foreach (int id in used)
         {
@@ -46,19 +49,20 @@ public class TodoListController : ControllerBase
             IsCompleted = dto.IsCompleted
         };
 
-        Items.Add(entity);
+        dbContext.ToDoItems.Add(entity);
+        dbContext.SaveChanges();
         var result = MapToResponse(entity);
         return CreatedAtAction(nameof(ReadById), new { id = result.Id }, result);
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemResponseDto>> Read()
-        => Ok(Items.Select(MapToResponse));
+        => Ok(dbContext.ToDoItems.Select(MapToResponse));
 
     [HttpGet("{id:int}")]
     public ActionResult<ToDoItemResponseDto> ReadById([FromRoute] int id)
     {
-        var item = Items.FirstOrDefault(x => x.Id == id);
+        var item = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
         return item is null ? NotFound() : Ok(MapToResponse(item));
     }
 
