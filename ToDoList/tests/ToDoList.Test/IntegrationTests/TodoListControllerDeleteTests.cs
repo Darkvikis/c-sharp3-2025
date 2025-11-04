@@ -1,13 +1,15 @@
 namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
-using ToDoList.Domain.DTOs;
 
 public class TodoListControllerDeleteTests : TodoListControllerTestBase
 {
     [Fact]
     public void DeleteByIdWithExistingIdReturnsNoContent()
     {
+        // Arrange
+        PrepareTest();
+
         // Verify the item exists
         var getBeforeDelete = Controller.ReadById(1);
         Assert.IsType<OkObjectResult>(getBeforeDelete.Result);
@@ -30,6 +32,9 @@ public class TodoListControllerDeleteTests : TodoListControllerTestBase
     [InlineData(int.MaxValue)]
     public void DeleteByIdWithNonExistingIdReturnsNotFound(int nonExistingId)
     {
+        // Arrange
+        PrepareTest();
+
         // Act
         var result = Controller.DeleteById(nonExistingId);
 

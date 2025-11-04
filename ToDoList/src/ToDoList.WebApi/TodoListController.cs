@@ -10,13 +10,6 @@ using ToDoList.Persistence;
 [Route("api/todo-items")]
 public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
 {
-    private static readonly List<ToDoItem> Items =
-    [
-        new() { Id = 1, Name = "Buy groceries",     Description = "Milk, eggs, bread, and vegetables.", IsCompleted = false },
-        new() { Id = 2, Name = "Finish C# project", Description = "Implement the ToDoList API and write unit tests.", IsCompleted = false },
-        new() { Id = 3, Name = "Call mom",          Description = "Weekly check-in call.", IsCompleted = true }
-    ];
-
     private readonly ToDoItemsContext dbContext = dbContext;
 
     [HttpPost]
@@ -83,7 +76,7 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var existing = Items.FirstOrDefault(x => x.Id == id);
+        var existing = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
         if (existing is null)
         {
             return NotFound();
@@ -93,18 +86,20 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
         existing.Description = dto.Description;
         existing.IsCompleted = dto.IsCompleted;
 
+        dbContext.SaveChanges();
         return NoContent();
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult DeleteById([FromRoute] int id)
     {
-        int idx = Items.FindIndex(x => x.Id == id);
-        if (idx < 0)
+        var entity = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
+        if (entity is null)
         {
             return NotFound();
         }
-        Items.RemoveAt(idx);
+        dbContext.ToDoItems.Remove(entity);
+        dbContext.SaveChanges();
         return NoContent();
     }
 

@@ -9,6 +9,7 @@ public class TodoListControllerCreateTests : TodoListControllerTestBase
     public void CreateWithValidDtoReturnsCreatedResponse()
     {
         // Arrange
+        PrepareTest();
         var dto = CreateValidDto();
 
         // Act
@@ -27,6 +28,9 @@ public class TodoListControllerCreateTests : TodoListControllerTestBase
     [Fact]
     public void CreateWithNullDtoReturnsBadRequest()
     {
+        // Arrange
+        PrepareTest();
+
         // Act
         var result = Controller.Create(null!);
 
@@ -44,6 +48,7 @@ public class TodoListControllerCreateTests : TodoListControllerTestBase
     public void CreateWithInvalidNameReturnsBadRequest(string invalidName)
     {
         // Arrange
+        PrepareTest();
         var dto = CreateValidDto(name: invalidName);
 
         // Act
@@ -58,6 +63,7 @@ public class TodoListControllerCreateTests : TodoListControllerTestBase
     public void CreateAssignsUniqueId()
     {
         // Arrange
+        PrepareTest();
         var dto1 = CreateValidDto("Task 1");
         var dto2 = CreateValidDto("Task 2");
 

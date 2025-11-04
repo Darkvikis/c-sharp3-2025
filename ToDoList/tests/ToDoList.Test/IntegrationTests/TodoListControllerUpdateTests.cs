@@ -9,6 +9,7 @@ public class TodoListControllerUpdateTests : TodoListControllerTestBase
     public void UpdateByIdWithValidDtoReturnsNoContent()
     {
         // Arrange
+        PrepareTest();
         var dto = CreateValidUpdateDto(1, "Updated Task", "Updated Description", true);
 
         // Act
@@ -30,6 +31,9 @@ public class TodoListControllerUpdateTests : TodoListControllerTestBase
     [Fact]
     public void UpdateByIdWithNullDtoReturnsBadRequest()
     {
+        // Arrange
+        PrepareTest();
+
         // Act
         var result = Controller.UpdateById(1, null!);
 
@@ -46,7 +50,9 @@ public class TodoListControllerUpdateTests : TodoListControllerTestBase
     [InlineData(1, 1, "\t", "Name is required.")]
     public void UpdateByIdWithInvalidDataReturnsBadRequest(int routeId, int dtoId, string name, string expectedError)
     {
+
         // Arrange
+        PrepareTest();
         var dto = CreateValidUpdateDto(dtoId, name, "Description");
 
         // Act
@@ -60,7 +66,9 @@ public class TodoListControllerUpdateTests : TodoListControllerTestBase
     [Fact]
     public void UpdateByIdWithNonExistingIdReturnsNotFound()
     {
+
         // Arrange
+        PrepareTest();
         var dto = CreateValidUpdateDto(999, "Updated Task");
 
         // Act
