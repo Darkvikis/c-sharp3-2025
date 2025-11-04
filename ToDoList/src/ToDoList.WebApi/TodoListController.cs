@@ -1,6 +1,7 @@
 namespace ToDoList.WebApi;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence;
@@ -57,12 +58,12 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
 
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemResponseDto>> Read()
-        => Ok(dbContext.ToDoItems.Select(MapToResponse));
+        => Ok(dbContext.ToDoItems.AsNoTracking().Select(MapToResponse));
 
     [HttpGet("{id:int}")]
     public ActionResult<ToDoItemResponseDto> ReadById([FromRoute] int id)
     {
-        var item = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
+        var item = dbContext.ToDoItems.AsNoTracking().FirstOrDefault(x => x.Id == id);
         return item is null ? NotFound() : Ok(MapToResponse(item));
     }
 

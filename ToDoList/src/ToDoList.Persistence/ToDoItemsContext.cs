@@ -12,7 +12,7 @@ public class ToDoItemsContext : DbContext
     public ToDoItemsContext(string connectionString = "DataSource=../../data/localdb.db")
     {
         this.connectionString = connectionString;
-        this.Database.Migrate();
+        Database.Migrate();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
