@@ -77,16 +77,27 @@ public class TodoListController(IRepository<ToDoItem> repository) : ControllerBa
         return NoContent();
     }
 
-    [HttpDelete("{id:int}")]
-    public IActionResult DeleteById([FromRoute] int id)
+    [HttpDelete("{toDoItemId:int}")]
+    public IActionResult DeleteById(int toDoItemId)
     {
-        var entity = repository.Read(id);
-        if (entity is null)
+        //try to delete the item
+        try
         {
-            return NotFound();
+            var itemToDelete = repository.Read(toDoItemId);
+            if (itemToDelete is null)
+            {
+                return NotFound(); //404
+            }
+
+            repository.Delete(toDoItemId);
         }
-        repository.Delete(id);
-        return NoContent();
+        catch (Exception ex)
+        {
+            return Problem(ex.Message, null, StatusCodes.Status500InternalServerError);
+        }
+
+        //respond to client
+        return NoContent(); //204
     }
 
     private static ToDoItemResponseDto MapToResponse(ToDoItem x)

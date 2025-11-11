@@ -12,5 +12,4 @@ public abstract class BaseUnitTests
         var repo = Substitute.For<IRepository<ToDoItem>>();
         return (new TodoListController(repo), repo);
     }
-
 }
