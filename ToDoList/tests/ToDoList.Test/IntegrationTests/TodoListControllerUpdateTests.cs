@@ -1,7 +1,6 @@
 namespace ToDoList.Test;
 
 using Microsoft.AspNetCore.Mvc;
-using ToDoList.Domain.DTOs;
 
 public class TodoListControllerUpdateTests : TodoListControllerTestBase
 {

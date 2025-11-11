@@ -1,8 +1,7 @@
-using System;
+namespace ToDoList.Persistence.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.Models;
-
-namespace ToDoList.Persistence.Repositories;
 
 public class ToDoItemsRepository(ToDoItemsContext dbContext) : IRepository<ToDoItem>
 {

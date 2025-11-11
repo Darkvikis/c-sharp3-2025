@@ -20,10 +20,10 @@ public abstract class TodoListControllerTestBase
 
     public TodoListControllerTestBase()
     {
-        var dbDir = Path.Combine(AppContext.BaseDirectory, "TestData");
+        string dbDir = Path.Combine(AppContext.BaseDirectory, "TestData");
         Directory.CreateDirectory(dbDir);
-        var dbFilePath = Path.Combine(dbDir, "localdb_test.db");
-        var connectionString = $"Data Source={dbFilePath}";
+        string dbFilePath = Path.Combine(dbDir, "localdb_test.db");
+        string connectionString = $"Data Source={dbFilePath}";
 
         Context = new ToDoItemsContext(connectionString);
         Repository = new TestToDoItemRepository(Context);

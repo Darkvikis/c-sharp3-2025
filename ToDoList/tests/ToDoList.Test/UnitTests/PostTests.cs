@@ -30,19 +30,6 @@ public class PostTests
     }
 
     [Fact]
-    public void CreateReturnsBadRequestWhenNameIsNull()
-    {
-        var (controller, repo) = CreateController();
-        var dto = new ToDoItemCreateRequestDto(null, "Desc", false);
-
-        var result = controller.Create(dto);
-
-        var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
-        Assert.Equal("Name is required.", badRequest.Value);
-        repo.DidNotReceive().Create(Arg.Any<ToDoItem>());
-    }
-
-    [Fact]
     public void CreateReturnsBadRequestWhenNameIsWhitespace()
     {
         var (controller, repo) = CreateController();

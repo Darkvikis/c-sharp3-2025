@@ -1,7 +1,6 @@
 namespace ToDoList.WebApi;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
 using ToDoList.Persistence.Repositories;
@@ -10,11 +9,11 @@ using ToDoList.Persistence.Repositories;
 [Route("api/todo-items")]
 public class TodoListController(IRepository<ToDoItem> repository) : ControllerBase
 {
-    private readonly IRepository<ToDoItem> Repository = repository;
+    private readonly IRepository<ToDoItem> repository = repository;
 
 
     [HttpPost]
-    public ActionResult<ToDoItemResponseDto> Create([FromBody] ToDoItemCreateRequestDto dto)
+    public ActionResult<ToDoItemResponseDto> Create([FromBody] ToDoItemCreateRequestDto? dto)
     {
         if (dto is null)
         {
@@ -32,24 +31,24 @@ public class TodoListController(IRepository<ToDoItem> repository) : ControllerBa
             IsCompleted = dto.IsCompleted
         };
 
-        Repository.Create(entity);
+        repository.Create(entity);
         var result = MapToResponse(entity);
         return CreatedAtAction(nameof(ReadById), new { id = result.Id }, result);
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemResponseDto>> Read()
-        => Ok(Repository.ReadAll().Select(MapToResponse));
+        => Ok(repository.ReadAll().Select(MapToResponse));
 
     [HttpGet("{id:int}")]
     public ActionResult<ToDoItemResponseDto> ReadById([FromRoute] int id)
     {
-        var item = Repository.Read(id);
+        var item = repository.Read(id);
         return item is null ? NotFound() : Ok(MapToResponse(item));
     }
 
     [HttpPut("{id:int}")]
-    public IActionResult UpdateById([FromRoute] int id, [FromBody] ToDoItemUpdateRequestDto dto)
+    public IActionResult UpdateById([FromRoute] int id, [FromBody] ToDoItemUpdateRequestDto? dto)
     {
         if (dto is null)
         {
@@ -64,7 +63,7 @@ public class TodoListController(IRepository<ToDoItem> repository) : ControllerBa
             return BadRequest("Name is required.");
         }
 
-        var existing = Repository.Read(id);
+        var existing = repository.Read(id);
         if (existing is null)
         {
             return NotFound();
@@ -74,19 +73,19 @@ public class TodoListController(IRepository<ToDoItem> repository) : ControllerBa
         existing.Description = dto.Description;
         existing.IsCompleted = dto.IsCompleted;
 
-        Repository.Update(existing);
+        repository.Update(existing);
         return NoContent();
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult DeleteById([FromRoute] int id)
     {
-        var entity = Repository.Read(id);
+        var entity = repository.Read(id);
         if (entity is null)
         {
             return NotFound();
         }
-        Repository.Delete(id);
+        repository.Delete(id);
         return NoContent();
     }
 
