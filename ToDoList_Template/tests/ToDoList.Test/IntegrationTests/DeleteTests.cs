@@ -1,18 +1,12 @@
 namespace ToDoList.Test.IntegrationTests;
 
-using Microsoft.AspNetCore.Mvc;
-using ToDoList.Domain.Models;
-using ToDoList.Persistence;
-using ToDoList.Persistence.Repositories;
-using ToDoList.WebApi.Controllers;
-
 public class DeleteTests
 {
     [Fact]
-    public void Delete_ValidId_ReturnsNoContent()
+    public void DeleteValidIdReturnsNoContent()
     {
         // Arrange
-        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        string connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
         using var context = new ToDoItemsContext(connectionString);
         var repository = new ToDoItemsRepository(context);
         var controller = new ToDoItemsController(repository);
@@ -38,16 +32,16 @@ public class DeleteTests
     }
 
     [Fact]
-    public void Delete_InvalidId_ReturnsNotFound()
+    public void DeleteInvalidIdReturnsNotFound()
     {
         // Arrange
-        var connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
+        string connectionString = "Data Source=../../../IntegrationTests/data/localdb_test.db";
         using var context = new ToDoItemsContext(connectionString);
         var repository = new ToDoItemsRepository(context);
         var controller = new ToDoItemsController(repository);
 
         // Act
-        var invalidId = -1;
+        int invalidId = -1;
         var result = controller.DeleteById(invalidId);
 
         // Assert

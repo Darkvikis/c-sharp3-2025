@@ -5,18 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
-using ToDoList.Persistence.Repositories;
 using ToDoList.WebApi;
 
-public class PostTests
+public class PostTests : BaseUnitTests
 {
-    private static (TodoListController controller, IRepository<ToDoItem> repo) CreateController()
-    {
-        var repo = Substitute.For<IRepository<ToDoItem>>();
-        var controller = new TodoListController(repo);
-        return (controller, repo);
-    }
-
     [Fact]
     public void CreateReturnsBadRequestWhenDtoIsNull()
     {

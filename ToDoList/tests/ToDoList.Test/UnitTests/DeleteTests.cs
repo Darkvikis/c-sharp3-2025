@@ -3,17 +3,9 @@ namespace ToDoList.Test.UnitTests;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
 using ToDoList.Domain.Models;
-using ToDoList.Persistence.Repositories;
-using ToDoList.WebApi;
 
-public class DeleteTests
+public class DeleteTests : BaseUnitTests
 {
-    private static (TodoListController controller, IRepository<ToDoItem> repo) CreateController()
-    {
-        var repo = Substitute.For<IRepository<ToDoItem>>();
-        return (new TodoListController(repo), repo);
-    }
-
     [Fact]
     public void DeleteReturnsNotFoundWhenMissing()
     {
