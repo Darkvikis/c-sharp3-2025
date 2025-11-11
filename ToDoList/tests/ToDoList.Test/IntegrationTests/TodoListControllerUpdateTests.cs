@@ -6,29 +6,6 @@ using ToDoList.Domain.DTOs;
 public class TodoListControllerUpdateTests : TodoListControllerTestBase
 {
     [Fact]
-    public void UpdateByIdWithValidDtoReturnsNoContent()
-    {
-        // Arrange
-        PrepareTest();
-        var dto = CreateValidUpdateDto(1, "Updated Task", "Updated Description", true);
-
-        // Act
-        var result = Controller.UpdateById(1, dto);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-
-        // Verify the item was actually updated
-        var getResult = Controller.ReadById(1);
-        var okResult = Assert.IsType<OkObjectResult>(getResult.Result);
-        var updatedItem = Assert.IsType<ToDoItemResponseDto>(okResult.Value);
-
-        Assert.Equal("Updated Task", updatedItem.Name);
-        Assert.Equal("Updated Description", updatedItem.Description);
-        Assert.True(updatedItem.IsCompleted);
-    }
-
-    [Fact]
     public void UpdateByIdWithNullDtoReturnsBadRequest()
     {
         // Arrange

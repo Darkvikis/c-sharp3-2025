@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Domain.DTOs;
 using ToDoList.Domain.Models;
-using ToDoList.Persistence;
+using ToDoList.Persistence.Repositories;
 
 [ApiController]
 [Route("api/todo-items")]
-public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
+public class TodoListController(IRepository<ToDoItem> repository) : ControllerBase
 {
-    private readonly ToDoItemsContext dbContext = dbContext;
+    private readonly IRepository<ToDoItem> Repository = repository;
+
 
     [HttpPost]
     public ActionResult<ToDoItemResponseDto> Create([FromBody] ToDoItemCreateRequestDto dto)
@@ -24,39 +25,26 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var used = dbContext.ToDoItems.Select(x => x.Id).OrderBy(x => x).ToList();
-        int newId = 1;
-        foreach (int id in used)
-        {
-            if (id != newId)
-            {
-                break;
-            }
-            newId++;
-        }
-
         var entity = new ToDoItem
         {
-            Id = newId,
             Name = dto.Name,
             Description = dto.Description,
             IsCompleted = dto.IsCompleted
         };
 
-        dbContext.ToDoItems.Add(entity);
-        dbContext.SaveChanges();
+        Repository.Create(entity);
         var result = MapToResponse(entity);
         return CreatedAtAction(nameof(ReadById), new { id = result.Id }, result);
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<ToDoItemResponseDto>> Read()
-        => Ok(dbContext.ToDoItems.AsNoTracking().Select(MapToResponse));
+        => Ok(Repository.ReadAll().Select(MapToResponse));
 
     [HttpGet("{id:int}")]
     public ActionResult<ToDoItemResponseDto> ReadById([FromRoute] int id)
     {
-        var item = dbContext.ToDoItems.AsNoTracking().FirstOrDefault(x => x.Id == id);
+        var item = Repository.Read(id);
         return item is null ? NotFound() : Ok(MapToResponse(item));
     }
 
@@ -76,7 +64,7 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
             return BadRequest("Name is required.");
         }
 
-        var existing = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
+        var existing = Repository.Read(id);
         if (existing is null)
         {
             return NotFound();
@@ -86,20 +74,19 @@ public class TodoListController(ToDoItemsContext dbContext) : ControllerBase
         existing.Description = dto.Description;
         existing.IsCompleted = dto.IsCompleted;
 
-        dbContext.SaveChanges();
+        Repository.Update(existing);
         return NoContent();
     }
 
     [HttpDelete("{id:int}")]
     public IActionResult DeleteById([FromRoute] int id)
     {
-        var entity = dbContext.ToDoItems.FirstOrDefault(x => x.Id == id);
+        var entity = Repository.Read(id);
         if (entity is null)
         {
             return NotFound();
         }
-        dbContext.ToDoItems.Remove(entity);
-        dbContext.SaveChanges();
+        Repository.Delete(id);
         return NoContent();
     }
 

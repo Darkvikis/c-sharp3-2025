@@ -1,9 +1,11 @@
 namespace ToDoList.Test;
 
+using Microsoft.EntityFrameworkCore;
 using ToDoList.WebApi;
 using ToDoList.Domain.DTOs;
 using ToDoList.Persistence;
 using ToDoList.Domain.Models;
+using ToDoList.Persistence.Repositories;
 
 /// <summary>
 /// Base class for TodoListController tests with shared helper methods
@@ -14,23 +16,25 @@ public abstract class TodoListControllerTestBase
 
     protected ToDoItemsContext Context { get; set; }
 
+    protected IRepository<ToDoItem> Repository { get; set; }
+
     public TodoListControllerTestBase()
     {
-        // Resolve stable absolute path under test output
         var dbDir = Path.Combine(AppContext.BaseDirectory, "TestData");
-        Directory.CreateDirectory(dbDir); // Ensure folder exists
-
+        Directory.CreateDirectory(dbDir);
         var dbFilePath = Path.Combine(dbDir, "localdb_test.db");
         var connectionString = $"Data Source={dbFilePath}";
 
         Context = new ToDoItemsContext(connectionString);
-        Controller = new TodoListController(Context);
+        Repository = new TestToDoItemRepository(Context);
+        Controller = new TodoListController(Repository);
     }
 
     protected void PrepareTest()
     {
         var toRemove = Context.ToDoItems.ToList();
         Context.ToDoItems.RemoveRange(toRemove);
+        Context.SaveChanges();
 
         var toDoItem = new ToDoItem
         {
@@ -45,13 +49,48 @@ public abstract class TodoListControllerTestBase
     }
 
     protected static ToDoItemCreateRequestDto CreateValidDto(
-            string name = "Test Task",
-            string description = "Test Description",
-            bool isCompleted = false) => new(name, description, isCompleted);
+        string name = "Test Task",
+        string description = "Test Description",
+        bool isCompleted = false) => new(name, description, isCompleted);
 
     protected static ToDoItemUpdateRequestDto CreateValidUpdateDto(
         int id,
         string name = "Updated Task",
         string description = "Updated Description",
         bool isCompleted = true) => new(id, name, description, isCompleted);
+
+    private sealed class TestToDoItemRepository(ToDoItemsContext ctx) : IRepository<ToDoItem>
+    {
+        private readonly ToDoItemsContext ctx = ctx;
+
+        public void Create(ToDoItem entity)
+        {
+            ctx.ToDoItems.Add(entity);
+            ctx.SaveChanges();
+        }
+
+        public IEnumerable<ToDoItem> ReadAll()
+            => [.. ctx.ToDoItems.AsNoTracking()];
+
+        public ToDoItem? Read(int id)
+            => ctx.ToDoItems.AsNoTracking().FirstOrDefault(x => x.Id == id);
+
+        public void Update(ToDoItem entity)
+        {
+            ctx.ToDoItems.Update(entity);
+            ctx.SaveChanges();
+        }
+
+        public void Delete(int id)
+        {
+            var found = ctx.ToDoItems.Find(id);
+            if (found is null)
+            {
+                return;
+            }
+
+            ctx.ToDoItems.Remove(found);
+            ctx.SaveChanges();
+        }
+    }
 }

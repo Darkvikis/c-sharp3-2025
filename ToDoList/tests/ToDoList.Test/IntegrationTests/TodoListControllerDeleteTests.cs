@@ -1,11 +1,12 @@
 namespace ToDoList.Test;
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 public class TodoListControllerDeleteTests : TodoListControllerTestBase
 {
     [Fact]
-    public void DeleteByIdWithExistingIdReturnsNoContent()
+    public async Task DeleteByIdWithExistingIdReturnsNoContent()
     {
         // Arrange
         PrepareTest();
