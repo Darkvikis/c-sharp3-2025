@@ -37,7 +37,7 @@ public class DeleteTests : BaseUnitTests
     }
 
     [Fact]
-    public void Delete_WhenReadThrows_ReturnsInternalServerError()
+    public void DeleteWhenReadThrowsReturnsInternalServerError()
     {
         var (controller, repo) = CreateController();
 
@@ -51,7 +51,7 @@ public class DeleteTests : BaseUnitTests
     }
 
     [Fact]
-    public void Delete_WhenDeleteThrows_ReturnsInternalServerError()
+    public void DeleteWhenDeleteThrowsReturnsInternalServerError()
     {
         var (controller, repo) = CreateController();
 
