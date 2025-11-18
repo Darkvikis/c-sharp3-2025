@@ -1,0 +1,50 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using System.Diagnostics
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<br />
+
+@if (ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@RequestId</code>
+    </p>
+}
+
+<b>@GetValue()</b>
+
+<br />
+
+<p>Počet kliknutí: @counter</p>
+
+<button @onclick="IncrementCounter" class="btn btn-primary">JmenoTlacitka</button>
+
+<Dashboard />
+
+@code{
+    private int counter = 0;
+
+    private string GetValue()
+    {
+        return Guid.NewGuid().ToString();
+    }
+
+    private void IncrementCounter()
+    {
+        counter++;
+    }
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

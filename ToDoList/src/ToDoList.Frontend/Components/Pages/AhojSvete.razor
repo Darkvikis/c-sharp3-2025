@@ -1,0 +1,22 @@
+@page "/ahojsvete"
+
+<PageTitle>Ahoj Svete</PageTitle>
+
+<h1>Ahoj svete</h1>
+<b>Moje Prvni stranka</b>
+<h2>@@</h2>
+<a href="mailto:Support@contoso.com">Support@contoso.com</a>
+<p>Last week this time: @(DateTime.Now - TimeSpan.FromDays(7))</p>
+<p>@pozdrav()</p>
+
+@* Comment goes here *@
+
+<!-- Comment goes here -->
+
+
+@code {
+    private string pozdrav()
+    {
+        return "Yo Yo Yo";
+    }
+}
