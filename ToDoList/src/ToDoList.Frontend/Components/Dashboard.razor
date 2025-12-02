@@ -1,5 +1,10 @@
+@using System.Threading.Tasks
+@using ToDoList.Frontend.Clients
 @using ToDoList.Frontend.Models
 @using System.Linq
+
+@inject IToDoItemsClient ToDoItemClient
+@rendermode InteractiveServer
 
 <div class="container mt-4">
     <h2>Dashboard</h2>
@@ -43,9 +48,9 @@
 
     private List<ToDoItemView> sortedData = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        sortedData = testData.ToList();
+        sortedData = await this.ToDoItemClient.ReadItems();
     }
 
     private void OrderById()
